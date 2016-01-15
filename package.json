@@ -1,6 +1,11 @@
 {
   "private": true,
+  "name": "index-card-db-api",
+  "version": "0.0.1",
   "devDependencies": {
     "gulp": "^3.9.0"
+  },
+  "dependencies": {
+    "express": "^4.13.3"
   }
 }
