@@ -6,6 +6,8 @@
     "gulp": "^3.9.0"
   },
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "kerberos": "0.0.17",
+    "mongodb": "^2.1.4"
   }
 }

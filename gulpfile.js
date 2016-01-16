@@ -1,10 +1,13 @@
+// jshint esversion: 6
+
 var gulp = require('gulp');
 var spawn = require('child_process').spawn;
 
-gulp.task('start-mongo', () => {
-  const mongod = spawn('mongod', ['--dbpath','./data'])
-  mongod.stdout.pipe(process.stdout)
-})
+gulp.task('start-mongo', (cb) => {
+  const mongod = spawn('mongod', ['--dbpath','./data']);
+  mongod.stdout.pipe(process.stdout);
+  cb();
+});
 
 // // http://stackoverflow.com/a/28912360/502331
 // function runCommand(command) {

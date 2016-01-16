@@ -1,3 +1,5 @@
+// jshint -W033
+
 var express = require("express");
 var bodyParser = require('body-parser');
 var mongodb = require('mongodb');
@@ -26,13 +28,13 @@ app.get("/all-with-conflict", function(request, response) {
             .find({
                 score: { $gt: 0 },
                 "match.100": { $exists: false }
-            }).toArray()
+            }).toArray();
     })
     .then(function(array) {
         var a = array
-            .filter(function(m) { return m.match.some(function(d) { return d.potentialConflict && d.score }) })
+            .filter(function(m) { return m.match.some(function(d) { return d.potentialConflict && d.score }); })
         response.json(a);
-    })
+    });
 })
 
 app.get("/all-with-superset", function(request, response) {
@@ -41,14 +43,14 @@ app.get("/all-with-superset", function(request, response) {
             .find({
                 score: { $gt: 0 },
                 // "match.100": { $exists: true }
-            }).toArray()
+            }).toArray();
     })
     .then(function(array) {
         var a = array
-            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == "superset") && parseInt(d.score) > 0 }) })
+            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == "superset") && parseInt(d.score) > 0; }) })
         response.json(a);
-    })
-})
+    });
+});
 
 app.get("/all-with-delta-feature/:feature", function(request, response) {
     db.then(function(db) {
@@ -56,13 +58,13 @@ app.get("/all-with-delta-feature/:feature", function(request, response) {
             .find({
                 score: { $gt: 0 },
                 // "match.100": { $exists: false }
-            }).toArray()
+            }).toArray();
     })
     .then(function(array) {
         var a = array
-            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == request.params.feature) && parseInt(d.score) > 0 }) })
+            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == request.params.feature) && parseInt(d.score) > 0; }) })
         response.json(a);
-    })
+    });
 })
 
 app.get("/all-with-delta-feature-limit/:feature", function(request, response) {
@@ -71,14 +73,14 @@ app.get("/all-with-delta-feature-limit/:feature", function(request, response) {
             .find({
                 score: { $gt: 5 },
                 "match.100": { $exists: false }
-            }).toArray()
+            }).toArray();
     })
     .then(function(array) {
         var a = array
-            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == request.params.feature) && parseInt(d.score) > 0 }) })
+            .filter(function(m) { return m.match.some(function(d) { return (d.deltaFeature == request.params.feature) && parseInt(d.score) > 0; }) })
         response.json(a);
     })
-})
+});
 
 app.post("/get-one", function(request, response) {
 
@@ -95,14 +97,14 @@ app.post("/get-one", function(request, response) {
 });
 
 app.get("/matches/score-above-zero/participant-b/:query", function(request, response) {
-    
+
     // In case we want to read from a static example:
     //
     // if (request.params.query == "Uniprot:P25963") {
     //     fs.readFile(__dirname + "/static/Uniprot_P25963.json", function(err, data) { response.json(JSON.stringify(JSON.parse(data))) })
     //     return
     // }
-    
+
     response.write("[")
     db.then(function(db) {
         return db.collection("card_matches")
