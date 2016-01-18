@@ -56,15 +56,22 @@ const parentDir = path.resolve(__dirname, '..', '..')
 
 function readCards (directory) {
   let dirPath = path.resolve(parentDir, directory)
-  let object$ = readdir(dirPath)
+  return readdir(dirPath)
     .do(arr => console.log('Directory files count:', arr.length))
-    .flatMap(arr => {
-      let fullPaths = arr.map(f => path.join(dirPath, f))
-      return stream.for(fullPaths, f => readFile(f, 'utf8'))
-    })
+    .flatMap(stream.from)
+    .filter(f => f.charAt(0) !== ".")
+    .map(f => path.join(dirPath, f))
+    .flatMap(f => readFile(f))
+    .map(buffer => buffer.toString())
     .map(JSON.parse)
-    .do(obj => obj._id = ObjectID(obj._id.$oid))
-  return object$
+    .map((f,i) => {
+      // console.log('Parsed json: ', i)
+      return f
+    })
+    .map(obj => {
+      obj._id = ObjectID(obj._id.$oid)
+      return obj
+    })
 }
 
 function insertCards(db$) {
@@ -72,18 +79,32 @@ function insertCards(db$) {
     .map(db => db.collection('cards'))
   return function(card$) {
     return card$
+      .map(obj => {
+        if (obj.meta) obj.meta = undefined;
+        // if (obj.meta) {
+        //   if (obj.meta.match_id) {
+        //     obj.meta.match_id = ObjectID(obj.meta.match_id.$oid)
+        //   }
+        //   if (obj.meta.reference_card) {
+        //     console.log(obj.meta.reference_card._id)
+        //   }
+        // }
+        return obj
+      })
       .withLatestFrom(
         cardCollection$,
         (obj, c) => c.insertOne(obj)
       )
       .flatMap(r => stream.fromPromise(r))
       .map(res => res.insertedId)
+      // .do(id => console.log('Inserted:', id))
   }
 }
 
 function addIdsToSet(setObject) {
   let setId = setObject._id
-  let query = { _id: setId }
+  // let query = { _id: setId }
+  let query = { name: setObject.name }
   let cardSetCollection$ = db$
     .map(db => db.collection('card_sets'))
   return function(id$) {
@@ -117,8 +138,11 @@ stream.just(true)
     return addIdsToSet(mitreSet)(insertedId$)
       .flatMapObserver(stream.empty, stream.empty, () => stream.just(true))
   })
-  // .flatMap(() => {
-  //
-  // })
-  .do(() => console.log('Done'))
+  .do(() => console.log('Done One'))
+  .flatMap(() => {
+    let insertedId$ = insertCards(db$)(friesCard$)
+    return addIdsToSet(friesSet)(insertedId$)
+      .flatMapObserver(stream.empty, stream.empty, () => stream.just(true))
+  })
+  .do(() => console.log('Done Two'))
   .subscribe()

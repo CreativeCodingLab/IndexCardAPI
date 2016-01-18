@@ -4,7 +4,7 @@ var gulp = require('gulp');
 var spawn = require('child_process').spawn;
 
 gulp.task('start-mongo', (cb) => {
-  const mongod = spawn('mongod', ['--dbpath','./data']);
+  const mongod = spawn('mongod', ['--dbpath','./data','-v']);
   mongod.stdout.pipe(process.stdout);
   cb();
 });
