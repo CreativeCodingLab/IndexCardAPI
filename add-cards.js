@@ -25,26 +25,36 @@ function dropDatabase(db$) {
     .flatMap(db$)
 }
 
+function addObjectToCollection(collection$) {
+  return function(object) {
+    collection$
+      .map(c => c.findOne(object))
+      .flatMap(stream.fromPromise)
+      .flatMap(obj => {
+        let err = new Error('A document with this name already exists.')
+        if (obj !== null)
+          return stream.throw(err)
+        return collection$
+      })
+      .map(c => c.insertOne(object))
+      .flatMap(stream.fromPromise)
+  }
+}
+
 function addCardSet(db$) {
-  return function (setObject) {
+  return function(setObject) {
     return db$
       .map(db => db.collection('card_sets'))
-      // .do(c => console.log('Got collection:', c.collectionName))
       .flatMap(c => {
         return stream.fromPromise(c.findOne(setObject))
-          // .do(result => console.log('Found object:', result))
           .do(result => {
             if (result !== null)
-            throw new Error('A set with this name already exists.')
+            throw new Error('A document with this name already exists.')
           })
           .catch(e => { console.error(e); return stream.empty() })
           .map(r => c)
           .map(c => c.insertOne(setObject))
           .flatMap(stream.fromPromise)
-          // .do(r => {
-          //   console.log('Result:', r.result)
-          //   console.log('insertedCount:', r.insertedCount)
-          // })
       })
       .flatMap(db$)
   }
@@ -52,11 +62,12 @@ function addCardSet(db$) {
 
 const readFile = stream.fromNodeCallback(fs.readFile)
 const readdir = stream.fromNodeCallback(fs.readdir)
-const parentDir = path.resolve(__dirname, '..', '..')
+const parentDir = path.resolve(__dirname, '..', 'index-card-app', 'data')
 
 function readCards (directory) {
   let dirPath = path.resolve(parentDir, directory)
   return readdir(dirPath)
+    .catch(e => console.error(e))
     .do(arr => console.log('Directory files count:', arr.length))
     .flatMap(stream.from)
     .filter(f => f.charAt(0) !== ".")
@@ -97,13 +108,11 @@ function insertCards(db$) {
       )
       .flatMap(r => stream.fromPromise(r))
       .map(res => res.insertedId)
-      // .do(id => console.log('Inserted:', id))
   }
 }
 
 function addIdsToSet(setObject) {
   let setId = setObject._id
-  // let query = { _id: setId }
   let query = { name: setObject.name }
   let cardSetCollection$ = db$
     .map(db => db.collection('card_sets'))
@@ -145,4 +154,37 @@ stream.just(true)
       .flatMapObserver(stream.empty, stream.empty, () => stream.just(true))
   })
   .do(() => console.log('Done Two'))
+  .flatMap(() => {
+    function selectSet(obj) {
+      return cardSetCollection$
+        .map(c => c.findOne({ name: obj.name }))
+        .flatMap(stream.fromPromise)
+    }
+    let setA$ = selectSet(mitreSet)
+    let setB$ = selectSet(friesSet)
+
+    setA$.map(o => o._id)
+      .subscribe(console.log.bind(null, 'Set A:'))
+    setA$.map(o => o.members.length)
+      .subscribe(console.log.bind(null, 'Set A members:'))
+    setB$.map(o => o._id)
+      .subscribe(console.log.bind(null, 'Set B:'))
+    setB$.map(o => o.members.length)
+      .subscribe(console.log.bind(null, 'Set B members:'))
+
+    let newComparisonSet$ = stream
+      .combineLatest(
+        setA$, setB$,
+        (setA, setB) => ({ setAid: setA._id, setBid: setB._id, members: [] })
+      )
+
+    newComparisonSet$.subscribe(console.log.bind(null, 'New comparison set:'))
+
+    let comparisonSetCollection$ = db$
+      .map(db => db.collection('comparison_sets'))
+
+    let 
+
+    return stream.empty()
+  })
   .subscribe()
