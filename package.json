@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "cors": "^2.5.2",
+    "debug": "^2.2.0",
     "loopback": "^2.26.2",
     "loopback-component-explorer": "^2.3.0",
     "loopback-connector-mongodb": "^1.13.3",
@@ -20,5 +21,5 @@
     "type": "",
     "url": ""
   },
-  "description": "Big Mechanism Index Card API"
+  "description": "UIC Big Mechanism Index Card Database API"
 }

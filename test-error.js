@@ -45,7 +45,14 @@ app.models.Test.create([
   { trigger: 'foo' }
 ], function(e, d) {
   console.log(e,d)
+  app.models.Test.find(function(err, data) {
+    console.log(err, data);
+  })
 })
+
+// app.models.Test.create([
+//   { trigger: 'foo' }
+// ])
 
 app.model(app.loopback.ACL, {
   "dataSource": "db",
