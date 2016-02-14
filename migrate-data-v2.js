@@ -113,12 +113,12 @@ var RawIndexCard = app.loopback.createModel({
   properties: IndexCard.definition.properties
 });
 
-// IndexCard.createFromReachOutput = function(card, cb) {
-//   debug('card', card);
-//   cb(null, 'created card');
-// }
+IndexCard.createFromReachOutput = function(card, cb) {
+  debug('card', card);
+  cb(null, card);
+}
 
-IndexCard.create = function()
+// IndexCard.create = function()
 
 app.model(ExtractedInformation, { dataSource: 'transient', public: true })
 app.model(IndexCard, { dataSource: 'mongo' });
@@ -167,7 +167,7 @@ app.model(RawIndexCard, { dataSource: 'mongo' });
 
 const create = function(data) {
   return stream.create(observer =>
-    app.models.RawIndexCard.create(data, function(e,d) {
+    app.models.IndexCard.createFromReachOutput(data, function(e,d) {
       if (e) return observer.onError(e);
       observer.onNext(d);
     })
