@@ -184,6 +184,7 @@ var MitreIndexCard = app.loopback.createModel({
   }
 });
 
+
 IndexCard.createFromMitreIndexCard = function(mitreCard, cb) {
   debug('Creating from Mitre Index Card');
   debug('Evidence', mitreCard.evidence);
@@ -215,6 +216,14 @@ IndexCard.createFromMitreIndexCard = function(mitreCard, cb) {
     .flatMap(stream.fromPromise)
     .do(created => debug('Attached Extracted Information', created.id))
     .share();
+
+IndexCard.createFromReachOutput = function(card, cb) {
+  debug('card', card);
+  cb(null, card);
+}
+
+// IndexCard.create = function()
+
 
   // ['a', 'b']
   //   .map(side => {
@@ -376,4 +385,36 @@ app.listen(function() {
 //     .subscribe()
 //
 //   next();
+// })
+
+
+// const create = function(data) {
+//   return stream.create(observer =>
+//     app.models.IndexCard.createFromReachOutput(data, function(e,d) {
+//       if (e) return observer.onError(e);
+//       observer.onNext(d);
+//     })
+//   )
+// }
+//
+// const dbPromise = MongoClient.connect('mongodb://localhost:27017/index_cards');
+// const reach_card$ = stream.fromPromise(dbPromise)
+//   .map(db => db.collection('reach_cards'))
+//   .map(collection => collection.find().limit(2).stream())
+//   .flatMap(stream => Rx.Node.fromStream(stream))
+//   .map(indexCard => {
+//     indexCard._trigger = indexCard.trigger;
+//     delete indexCard._id;
+//     delete indexCard.trigger;
+//     return indexCard;
+//     // return { foo: 'bar' }
+//   })
+//   .flatMap(obj => create(obj))
+//   // .catch(stream.throw)
+//   // .do(console.log)
+//   .subscribe()
+//
+// app.listen(function() {
+//   app.emit('started');
+//   console.log('Web server listening at: %s', app.get('url'));
 // })
