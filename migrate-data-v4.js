@@ -59,28 +59,24 @@ var Participant = app.loopback.createModel({
   }
 });
 
-// var IndexCardParticipant = app.loopback.createModel({
-//   name: 'IndexCardParticipant'
-// });
-
-// var ExtractedInformation = app.loopback.createModel({
-//   name: 'ExtractedInformation',
-//   strict: 'validate',
-//   properties: {
-//     interaction_type: {
-//       type: String,
-//       required: true
-//     },
-//     negative_information: {
-//       type: String,
-//       required: true
-//     },
-//     hypothesis_information: {
-//       type: Boolean,
-//       required: true
-//     }
-//   },
-// });
+var ExtractedInformation = app.loopback.createModel({
+  name: 'ExtractedInformation',
+  strict: 'validate',
+  properties: {
+    interaction_type: {
+      type: String,
+      required: true
+    },
+    negative_information: {
+      type: String,
+      required: true
+    },
+    hypothesis_information: {
+      type: Boolean,
+      required: true
+    }
+  },
+});
 
 var IndexCard = app.loopback.createModel({
   name: 'IndexCard',
@@ -124,16 +120,6 @@ var IndexCard = app.loopback.createModel({
     }
   },
   relations: {
-    // extractedInformation: {
-    //   // type: 'embedsOne',
-    //   type: 'hasOne',
-    //   model: 'ExtractedInformation',
-    //   property: 'extracted_information',
-    //   options: {
-    //     validate: true,
-    //     persistent: true
-    //   }
-    // },
     mitreIndexCard: {
       type: 'hasOne',
       model: 'MitreIndexCard',
@@ -143,23 +129,30 @@ var IndexCard = app.loopback.createModel({
         persistent: true
       }
     },
-    // participant_as: {
-    //     type: 'hasAndBelongsToMany',
-    //     model: 'Participant',
-    //     property: 'participant_a_array',
-    //     options: {
-    //       validate: true,
-    //       persistent: true
-    //     }
-    // }
+    participant_as: {
+      type: 'hasAndBelongsToMany',
+      model: 'Participant',
+      property: 'participant_a_array',
+      options: {
+        validate: true,
+        persistent: true
+      }
+    },
+    participant_bs: {
+      type: 'hasAndBelongsToMany',
+      model: 'Participant',
+      property: 'participant_b_array',
+      options: {
+        validate: true,
+        persistent: true
+      }
+    }
   }
 });
 
-// var ExtractedInformationParticipant = app.loopback.createModel({
-//   name: 'ExtractedInformationParticipant'
-// });
-
-
+var IndexCardParticipant = app.loopback.createModel({
+  name: 'IndexCardParticipant'
+});
 
 const mitre_properties = Object.assign({}, IndexCard.definition.properties);
 mitre_properties.extracted_information = {
@@ -184,6 +177,13 @@ var MitreIndexCard = app.loopback.createModel({
   }
 });
 
+app.model(IndexCardParticipant, { dataSource: 'mongo' });
+
+app.model(Participant, { dataSource: 'mongo' });
+app.model(ExtractedInformation, { dataSource: 'transient' });
+app.model(IndexCard, { dataSource: 'mongo' });
+
+app.model(MitreIndexCard, { dataSource: 'mongo' });
 
 IndexCard.createFromMitreIndexCard = function(mitreCard, cb) {
   debug('Creating from Mitre Index Card');
@@ -217,40 +217,31 @@ IndexCard.createFromMitreIndexCard = function(mitreCard, cb) {
     .do(created => debug('Attached Extracted Information', created.id))
     .share();
 
-IndexCard.createFromReachOutput = function(card, cb) {
-  debug('card', card);
-  cb(null, card);
+  ['a', 'b']
+    .map(side => {
+      let part = extracted[`participant_${side}`];
+      let arr = (typeof part === 'Array' ? part : [part]);
+      stream.from(arr)
+        .map(p => {
+          return Participant
+            .findOrCreate({ where: { identifier: p.identifier } }, p)
+        })
+        .flatMap(stream.fromPromise)
+        .map(arr => arr[0])
+        .do(debug)
+        .combineLatest(
+          indexCard$,
+          (part, card) => card[`participant_${side}s`].add(part)
+        )
+        .flatMap(stream.fromPromise)
+        // .do(console.log)
+        .do(o => {
+          debug('Attached participant from', o.participantId)
+          debug('Attached participant to', o.indexCardId)
+        })
+        .subscribe()
+    })
 }
-
-// IndexCard.create = function()
-
-
-  // ['a', 'b']
-  //   .map(side => {
-  //     let part = extracted[`participant_${side}`];
-  //     let arr = (typeof part === 'Array' ? part : [part]);
-  //     stream.from(arr)
-  //       .map(p => {
-  //         return Participant
-  //           .findOrCreate({ where: { identifier: p.identifier } }, p)
-  //       })
-  //       .flatMap(stream.fromPromise)
-  //       .map(arr => arr[0])
-  //       .withLatestFrom(
-  //         indexCard$,
-  //         (part, card) => card.participant_as.add(part)
-  //       )
-  //       .flatMap(stream.fromPromise)
-  //       .do(console.log)
-  //       // .subscribe()
-  //   })
-}
-
-app.model(Participant, { dataSource: 'mongo' });
-app.model(ExtractedInformation, { dataSource: 'transient' });
-app.model(IndexCard, { dataSource: 'mongo' });
-// app.model(IndexCardParticipant, { dataSource: 'mongo' });
-app.model(MitreIndexCard, { dataSource: 'mongo' });
 
 const create = function(data) {
   return stream.create(observer =>
@@ -385,36 +376,4 @@ app.listen(function() {
 //     .subscribe()
 //
 //   next();
-// })
-
-
-// const create = function(data) {
-//   return stream.create(observer =>
-//     app.models.IndexCard.createFromReachOutput(data, function(e,d) {
-//       if (e) return observer.onError(e);
-//       observer.onNext(d);
-//     })
-//   )
-// }
-//
-// const dbPromise = MongoClient.connect('mongodb://localhost:27017/index_cards');
-// const reach_card$ = stream.fromPromise(dbPromise)
-//   .map(db => db.collection('reach_cards'))
-//   .map(collection => collection.find().limit(2).stream())
-//   .flatMap(stream => Rx.Node.fromStream(stream))
-//   .map(indexCard => {
-//     indexCard._trigger = indexCard.trigger;
-//     delete indexCard._id;
-//     delete indexCard.trigger;
-//     return indexCard;
-//     // return { foo: 'bar' }
-//   })
-//   .flatMap(obj => create(obj))
-//   // .catch(stream.throw)
-//   // .do(console.log)
-//   .subscribe()
-//
-// app.listen(function() {
-//   app.emit('started');
-//   console.log('Web server listening at: %s', app.get('url'));
 // })
