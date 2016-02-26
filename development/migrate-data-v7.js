@@ -7,8 +7,6 @@ var mongodb = require('mongodb');
 const debug = require('debug');
 Rx.Node = require('rx-node');
 
-debug.enable('validate');
-
 const stream = Rx.Observable;
 var MongoClient = mongodb.MongoClient;
 
@@ -64,27 +62,12 @@ var IndexCard = app.loopback.createModel({
       foreignKey: 'nxmlId'
     }
   },
-  // acls: [
-  //   {
-  //     // "accessType": "*",
-  //     property: "findOne",
-  //     "principalType": "ROLE",
-  //     "principalId": "$everyone",
-  //     "permission": "DENY"
-  //   }
-  // ],
-  indexes: {
-    nxml_id_index: {
-      keys: { nxmlId: 1 }
-    }
-  },
   idInjection: false
 });
 
 var NXML = app.loopback.createModel({
   name: 'NXML',
   strict: 'throw',
-  plural: 'NXML',
   properties: {
     articleFront: {
       type: Object,
@@ -95,45 +78,14 @@ var NXML = app.loopback.createModel({
       required: true
     }
   },
-  relations: {
-    indexCards: {
-      type: 'hasMany',
-      model: 'IndexCard',
-      foreignKey: 'nxmlId'
-    }
-  },
-  acls: [
-    {
-      // "accessType": "*",
-      property: "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY"
-    }
-  ],
   idInjection: false
 });
 
-NXML.disableRemoteMethod('deleteById', true);
-
 app.model(NXML, { dataSource: 'mongo' });
 app.model(IndexCard, { dataSource: 'mongo' });
-app.model(app.loopback.User, { "dataSource": "db", "public": false });
-app.model(app.loopback.AccessToken, { "dataSource": "db", "public": false });
-app.model(app.loopback.ACL, { "dataSource": "db", "public": false });
-app.model(app.loopback.RoleMapping, { "dataSource": "db", "public": false });
-app.model(app.loopback.Role, { "dataSource": "db", "public": false });
 
-app.enableAuth();
+IndexCard.find({ limit: 1 })
+  .then(function(d) { console.log(d) });
 
-IndexCard
-  .findOne()
-  .then(function(d) {
-    d.isValid(e => debug('validate')(`one card is valid`))
-  });
-
-NXML
-  .findOne()
-  .then(function(d) {
-    d.isValid(e => debug('validate')(`one nxml is valid`))
-  });
+NXML.find({ limit: 1 })
+  .then(function(d) { console.log(d) });
