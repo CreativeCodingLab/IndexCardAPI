@@ -3,37 +3,33 @@
 var loopback = require('loopback');
 var explorer = require('loopback-component-explorer');
 var Rx = require('rx');
-var mongodb = require('mongodb');
+// var mongodb = require('mongodb');
 const debug = require('debug');
 Rx.Node = require('rx-node');
 
-debug.enable('validate');
-
-const stream = Rx.Observable;
-var MongoClient = mongodb.MongoClient;
-
 var app = module.exports = loopback();
 
-app.set('host', '0.0.0.0');
-app.set('port', '3000');
-app.set('restApiRoot', '/api');
 app.set('legacyExplorer', false);
 
-app.middlewareFromConfig(loopback.rest, { paths: [ '/api' ], phase: 'routes' });
+app.use('/api', loopback.rest());
 
-app.use('/explorer', explorer.routes(app, { basePath: '/api' }));
+app.get('/', (req, res) => {
+  res.write(JSON.stringify(new Date()) + '\n');
+  res.end('Hello from the Index Card DB Server.');
+});
 
-app.listen(function() {
-  app.emit('started');
-  console.log('Web server listening at: %s', app.get('url'));
-})
+app.use('/explorer', explorer.routes(app, { basePath: '/index-cards/api' }));
+
+//
+// ADD DATASOURCES
+//
 
 app.dataSource('db', {
   "name": "db",
   "connector": "memory"
 });
 
-const mongo = app.dataSource('mongo', {
+app.dataSource('mongo', {
   name: 'mongo',
   connector: 'mongodb',
   database: 'index_cards_loopback'
@@ -102,22 +98,46 @@ var NXML = app.loopback.createModel({
       foreignKey: 'nxmlId'
     }
   },
-  acls: [
-    {
-      // "accessType": "*",
-      property: "WRITE",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY"
-    }
-  ],
+  // acls: [
+  //   {
+  //     // "accessType": "*",
+  //     property: "WRITE",
+  //     "principalType": "ROLE",
+  //     "principalId": "$everyone",
+  //     "permission": "DENY"
+  //   }
+  // ],
   idInjection: false
 });
 
-NXML.disableRemoteMethod('deleteById', true);
+function disable_remote_write_methods(model) {
+  model.disableRemoteMethod('deleteById', true);
+  model.disableRemoteMethod('create', true);
+  model.disableRemoteMethod("upsert", true);
+  model.disableRemoteMethod("updateAll", true);
+  model.disableRemoteMethod("updateAttributes", false);
+  model.disableRemoteMethod("createChangeStream", true);
+}
+
+function disable_related_remote_write_methods(model, related) {
+  // model.disableRemoteMethod(`__count__${related}`, false);
+  // model.disableRemoteMethod(`__findById__${related}`, false);
+  // model.disableRemoteMethod(`__get__${related}`, false);
+  
+  model.disableRemoteMethod(`__create__${related}`, false);
+  model.disableRemoteMethod(`__updateById__${related}`, false);
+  model.disableRemoteMethod(`__destroyById__${related}`, false);
+  model.disableRemoteMethod(`__delete__${related}`, false);
+}
+
+disable_remote_write_methods(IndexCard);
+disable_remote_write_methods(NXML);
+disable_related_remote_write_methods(NXML, 'indexCards');
+
 
 app.model(NXML, { dataSource: 'mongo' });
 app.model(IndexCard, { dataSource: 'mongo' });
+
 app.model(app.loopback.User, { "dataSource": "db", "public": false });
 app.model(app.loopback.AccessToken, { "dataSource": "db", "public": false });
 app.model(app.loopback.ACL, { "dataSource": "db", "public": false });

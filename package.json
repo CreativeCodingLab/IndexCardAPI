@@ -1,7 +1,7 @@
 {
   "name": "index-card-api",
   "version": "0.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node ."
   },
