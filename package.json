@@ -16,7 +16,9 @@
     "rx-node": "^1.0.1",
     "serve-favicon": "^2.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
   "repository": {
     "type": "",
     "url": ""

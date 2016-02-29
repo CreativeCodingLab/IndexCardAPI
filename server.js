@@ -1,11 +1,9 @@
 'use strict'
 
-var loopback = require('loopback');
-var explorer = require('loopback-component-explorer');
-var Rx = require('rx');
-// var mongodb = require('mongodb');
+const loopback = require('loopback');
+const explorer = require('loopback-component-explorer');
 const debug = require('debug');
-Rx.Node = require('rx-node');
+
 
 var app = module.exports = loopback();
 
@@ -110,6 +108,40 @@ var NXML = app.loopback.createModel({
   idInjection: false
 });
 
+//
+// Custom Remote Methods
+//
+//
+
+IndexCard.greet = function(msg, cb) {
+  cb(null, 'Greetings... ' + msg);
+};
+     
+IndexCard.remoteMethod(
+    'greet', 
+    {
+      accepts: {arg: 'msg', type: 'string'},
+      returns: {arg: 'greeting', type: 'string'}
+    }
+);
+
+IndexCard.compare = function(cardA, cardB, cb) {
+  cb(null, 'Greetings... ' + cardA.pmc_id);
+};
+     
+IndexCard.remoteMethod(
+    'compare', 
+    {
+      accepts: {arg: 'cards', type: 'object', http: { source: 'body' } },
+      returns: {arg: 'greeting', type: 'string'}
+    }
+);
+
+//
+// DISABLE STUFF
+//
+//
+
 function disable_remote_write_methods(model) {
   model.disableRemoteMethod('deleteById', true);
   model.disableRemoteMethod('create', true);
@@ -132,8 +164,8 @@ function disable_related_remote_write_methods(model, related) {
 
 disable_remote_write_methods(IndexCard);
 disable_remote_write_methods(NXML);
-disable_related_remote_write_methods(NXML, 'indexCards');
 
+disable_related_remote_write_methods(NXML, 'indexCards');
 
 app.model(NXML, { dataSource: 'mongo' });
 app.model(IndexCard, { dataSource: 'mongo' });
@@ -146,14 +178,16 @@ app.model(app.loopback.Role, { "dataSource": "db", "public": false });
 
 app.enableAuth();
 
+
+
 IndexCard
   .findOne()
   .then(function(d) {
-    d.isValid(e => debug('validate')(`one card is valid`))
+    d.isValid(e => debug('validate')(`one card is valid`));
   });
 
 NXML
   .findOne()
   .then(function(d) {
-    d.isValid(e => debug('validate')(`one nxml is valid`))
+    d.isValid(e => debug('validate')(`one nxml is valid`));
   });
