@@ -1,9 +1,10 @@
 const spawn = require('child_process').spawn;
 const gulp = require('gulp');
 
-const dbpath = '/data/mongodb-data';
+const dbpath = '/data/mongo-data-index-cards';
 
 gulp.task('start-mongo', function(cb) {
+  // mongod --dbpath /data/mongodb-data --fork --logpath ./mongo.log --logappend
   const logpath = './mongo.log';
   const args = [
     '--dbpath', dbpath, '--fork', '--logpath', logpath, '--logappend'
