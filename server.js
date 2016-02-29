@@ -113,23 +113,24 @@ var NXML = app.loopback.createModel({
 //
 //
 
-IndexCard.greet = function(msg, cb) {
-  cb(null, 'Greetings... ' + msg);
-};
+// IndexCard.greet = function(msg, cb) {
+//   cb(null, 'Greetings... ' + msg.foo);
+// };
      
-IndexCard.remoteMethod(
-    'greet', 
-    {
-      accepts: {arg: 'msg', type: 'string'},
-      returns: {arg: 'greeting', type: 'string'}
-    }
-);
+// IndexCard.remoteMethod(
+//     'greet', 
+//     {
+//       // accepts: {arg: 'msg', type: 'string'},
+//       accepts: {arg: 'msg', type: 'object', http: { source: 'body' } },
+//       returns: {arg: 'greeting', type: 'string'}
+//     }
+// );
 
 const comparator = new IndexCardComparator();
 
 IndexCard.compare = function(cards, cb) {
-  let cardA = cards.cardA;
-  let cardB = cards.cardB;
+  let cardA = Object.assign({}, cards.cardA);
+  let cardB = Object.assign({}, cards.cardB);
   let updated_card = comparator.findModelRelation(cardA, [cardB]);
   let classified_card = comparator.classify(updated_card);
   let match = classified_card.match[0];
@@ -139,14 +140,19 @@ IndexCard.compare = function(cards, cb) {
     score: match.score,
     model_relation: classified_card.model_relation
   };
-  cb(null, comparison);
+  let response = {
+    cardA: cards.cardA,
+    cardB: cards.cardB,
+    comparsion: comparison
+  };
+  cb(null, response);
 };
      
 IndexCard.remoteMethod(
     'compare', 
     {
       accepts: {arg: 'cards', type: 'object', http: { source: 'body' } },
-      returns: {arg: 'greeting', type: 'string'}
+      returns: {arg: 'response', type: 'object'}
     }
 );
 
