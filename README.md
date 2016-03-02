@@ -9,6 +9,7 @@ Available API methods can be seen here:
 
  - Given an Index Card ObjectID, get the NXML data for that card:  
 http://ccrg-data.evl.uic.edu/index-cards/api/IndexCards/56cb6ca9fb34904d10525cd3/nxml
+
 - Given a PubMed ID, get all the Index Cards that were produced from that publication:  
 http://ccrg-data.evl.uic.edu/index-cards/api/NXML/PMC1174968/indexCards
 
