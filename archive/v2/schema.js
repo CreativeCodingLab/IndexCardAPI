@@ -1,7 +1,0 @@
-conn = new Mongo()
-db = conn.getDB('index_cards')
-db.dropDatabase()
-db.createCollection('card_sets')
-db.createCollection('cards')
-db.createCollection('comparisons')
-print(db.getCollectionNames())
