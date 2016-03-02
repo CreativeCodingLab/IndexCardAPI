@@ -15,7 +15,7 @@ NMXL publication documents are stored (in their entirety) as a [MongoDB Binary o
 
 ### IndexCard
 
-```json
+```js
 {
     mitreCard: {
       description: "The original Index Card data which is output by REACH",
@@ -32,7 +32,7 @@ NMXL publication documents are stored (in their entirety) as a [MongoDB Binary o
 
 ### NXML
 
-```json
+```js
 {
   articleFront: {
     type: Object,
