@@ -15,10 +15,9 @@ http://ccrg-data.evl.uic.edu/index-cards/api/NXML/PMC1174968/indexCards
 
 ## To-Do
 
-[ ] Incorporate "sets" of cards via a `CardSet` object.
-[ ] Figure out how to account for index cards being output by different versions of REACH.
-[ ] Give `participants` their own object, and add relations between index cards and participants.
-[ ] ...
+- [ ] Incorporate "sets" of cards via a `CardSet` object.
+- [ ] Figure out how to account for index cards being output by different versions of REACH.
+- [ ] Give `participants` their own object, and add relations between index cards and participants.
 
 ## Notes
 
