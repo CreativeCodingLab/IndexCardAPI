@@ -5,6 +5,20 @@ This is a [LoopBack](http://loopback.io/) API providing access to a database of 
 Available API methods can be seen here:
 [http://ccrg-data.evl.uic.edu/index-cards/explorer](http://ccrg-data.evl.uic.edu/index-cards/explorer)
 
+## Example queries
+
+ - Given an Index Card ObjectID, get the NXML data for that card:  
+http://ccrg-data.evl.uic.edu/index-cards/api/IndexCards/56cb6ca9fb34904d10525cd3/nxml
+- Given a PubMed ID, get all the Index Cards that were produced from that publication:  
+http://ccrg-data.evl.uic.edu/index-cards/api/NXML/PMC1174968/indexCards
+
+## To-Do
+
+[ ] Incorporate "sets" of cards via a `CardSet` object.
+[ ] Figure out how to account for index cards being output by different versions of REACH.
+[ ] Give `participants` their own object, and add relations between index cards and participants.
+[ ] ...
+
 ## Notes
 
 Original Mitre Index Cards are stored as the `mitreCard` property of an `IndexCard` object. This is to avoid mutating the original index card, with one exception – if the original index card had an `_id` field, it is removed when it is added to the database. This is done to avoid confusing `_id` fields used by other databases with the fields used by this database.
