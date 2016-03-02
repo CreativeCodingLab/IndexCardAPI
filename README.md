@@ -1,1 +1,47 @@
 # Loopback Index Card API
+
+A [LoopBack](http://loopback.io/) API providing access to a database of Mitre Index Cards that are output by the [REACH system](https://github.com/clulab/reach) and their associated publications, as NXML documents.
+
+The available API methods can be seen here:
+[http://ccrg-data.evl.uic.edu/index-cards/explorer](http://ccrg-data.evl.uic.edu/index-cards/explorer)
+
+## Notes
+
+Original Mitre Index Cards are stored as the `mitreCard` property of an `IndexCard` object. This is to avoid mutating the original index card, with one exception – if the original index card had an `_id` field, it is removed when it is added to the database. This is done to avoid confusing `_id` fields used by other databases with the fields used by this database.
+
+NMXL publication documents are stored (in their entirety) as a [MongoDB Binary object](http://mongodb.github.io/node-mongodb-native/2.0/api/Binary.html) in the `nxmlBinary` field. The `<article-front>` 
+
+## Object Schemas
+
+### IndexCard
+
+```json
+{
+    mitreCard: {
+      description: "The original Index Card data which is output by REACH",
+      type: Object,
+      required: true
+    },
+    nxmlId: {
+      description: "The foreign key for the NXML publication that generated this index card.",
+      type: String,
+      required: true
+    }
+  }
+```
+
+### NXML
+
+```json
+{
+  articleFront: {
+    type: Object,
+    required: true
+  },
+  xmlBinary: {
+    type: Object,
+    required: true
+  }
+}
+```
+
