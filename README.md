@@ -1,8 +1,8 @@
 # Loopback Index Card API
 
-A [LoopBack](http://loopback.io/) API providing access to a database of Mitre Index Cards that are output by the [REACH system](https://github.com/clulab/reach) and their associated publications, as NXML documents.
+This is a [LoopBack](http://loopback.io/) API providing access to a database of Mitre Index Cards that are output by the [REACH system](https://github.com/clulab/reach) and their associated publications, as NXML documents.
 
-The available API methods can be seen here:
+Available API methods can be seen here:
 [http://ccrg-data.evl.uic.edu/index-cards/explorer](http://ccrg-data.evl.uic.edu/index-cards/explorer)
 
 ## Notes
