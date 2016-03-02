@@ -13,6 +13,8 @@ http://ccrg-data.evl.uic.edu/index-cards/api/IndexCards/56cb6ca9fb34904d10525cd3
 - Given a PubMed ID, get all the Index Cards that were produced from that publication:  
 http://ccrg-data.evl.uic.edu/index-cards/api/NXML/PMC1174968/indexCards
 
+The API will also compare two Index Cards (sent via a POST request) using the [PathwayCommons IndexCardComparator script](https://github.com/PathwayCommons/pathway-cards/blob/master/comparator/src/main/scripts/IndexCardComparator.js).
+
 ## To-Do
 
 - [ ] Incorporate "sets" of cards via a `CardSet` object.
