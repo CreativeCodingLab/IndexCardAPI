@@ -58,15 +58,6 @@ var IndexCard = app.loopback.createModel({
       foreignKey: 'nxmlId'
     }
   },
-  // acls: [
-  //   {
-  //     // "accessType": "*",
-  //     property: "findOne",
-  //     "principalType": "ROLE",
-  //     "principalId": "$everyone",
-  //     "permission": "DENY"
-  //   }
-  // ],
   indexes: {
     nxml_id_index: {
       keys: { nxmlId: 1 }
@@ -96,15 +87,6 @@ var NXML = app.loopback.createModel({
       foreignKey: 'nxmlId'
     }
   },
-  // acls: [
-  //   {
-  //     // "accessType": "*",
-  //     property: "WRITE",
-  //     "principalType": "ROLE",
-  //     "principalId": "$everyone",
-  //     "permission": "DENY"
-  //   }
-  // ],
   idInjection: false
 });
 
@@ -112,19 +94,6 @@ var NXML = app.loopback.createModel({
 // Custom Remote Methods
 //
 //
-
-// IndexCard.greet = function(msg, cb) {
-//   cb(null, 'Greetings... ' + msg.foo);
-// };
-     
-// IndexCard.remoteMethod(
-//     'greet', 
-//     {
-//       // accepts: {arg: 'msg', type: 'string'},
-//       accepts: {arg: 'msg', type: 'object', http: { source: 'body' } },
-//       returns: {arg: 'greeting', type: 'string'}
-//     }
-// );
 
 const comparator = new IndexCardComparator();
 
@@ -209,61 +178,3 @@ NXML
     d.isValid(e => debug('validate')(`one nxml is valid`));
   });
   
-// const cardA = {
-//   "submitter" : "Reach",
-//   "model_relation" : "extension",
-//   "extracted_information" : {
-//           "interaction_type" : "binds",
-//           "negative_information" : false,
-//           "participant_b" : {
-//                   "in_model" : true,
-//                   "identifier" : "interpro:IPR030474",
-//                   "entity_text" : "IL-6",
-//                   "entity_type" : "family"
-//           },
-//           "participant_a" : {
-//                   "in_model" : true,
-//                   "identifier" : "interpro:IPR009318",
-//                   "entity_text" : "GRP",
-//                   "entity_type" : "family"
-//           },
-//           "hypothesis_information" : false
-//   },
-//   "reading_complete" : "2016-01-12T11:54:47Z",
-//   "reader_type" : "machine",
-//   "reading_started" : "2016-01-12T11:54:28Z",
-//   "evidence" : [
-//           "GRP, with SP, is closely associated with IL-6"
-//   ],
-//   "pmc_id" : "1174968",
-//   "score" : 0,
-//   "trigger" : "associated"
-// };
-
-// IndexCard.compare({ cardA: cardA, cardB: cardA }, (e,d) => console.log(d));
-
-// const updated_card = comparator.findModelRelation(cardA, [cardA]);
-// const classified_card = comparator.classify(updated_card);
-// const match = classified_card.match[0];
-// const comparison = {
-//   deltaFeature: match.deltaFeature,
-//   potentialConflict: match.potentialConflict,
-//   score: match.score,
-//   model_relation: classified_card.model_relation
-// };
-// // console.log(classified_card);
-// console.log(comparison);
-
-// IndexCard
-//   .findOne()
-//   .then(function(d) {
-//     // console.log(d.extracted_information.participant_b);
-//     console.log(d.mitreCard.extracted_information.participant_b.identifier);
-//   })
-  
-// IndexCard
-//   .findOne({ where: { 'd.mitreCard.extracted_information.participant_b.identifier': 'interpro:IPR030474' }})
-//   .then(function(d) {
-//     console.log(d);
-//     // console.log(d.mitreCard.extracted_information.participant_b.identifier);
-//   })
