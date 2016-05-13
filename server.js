@@ -63,15 +63,6 @@ var IndexCard = app.loopback.createModel({
       through: 'IndexCardParticipants'
     }
   },
-  // acls: [
-  //   {
-  //     // "accessType": "*",
-  //     property: "findOne",
-  //     "principalType": "ROLE",
-  //     "principalId": "$everyone",
-  //     "permission": "DENY"
-  //   }
-  // ],
   indexes: {
     nxml_id_index: {
       keys: { nxmlId: 1 }
@@ -144,15 +135,6 @@ var NXML = app.loopback.createModel({
       foreignKey: 'nxmlId'
     }
   },
-  // acls: [
-  //   {
-  //     // "accessType": "*",
-  //     property: "WRITE",
-  //     "principalType": "ROLE",
-  //     "principalId": "$everyone",
-  //     "permission": "DENY"
-  //   }
-  // ],
   idInjection: false
 });
 
@@ -251,6 +233,7 @@ NXML
     d.isValid(e => debug('validate')(`one nxml is valid`));
   });
   
+
 // const cardA = {
 //   "submitter" : "Reach",
 //   "model_relation" : "extension",
@@ -324,3 +307,4 @@ NXML
 //       returns: {arg: 'greeting', type: 'string'}
 //     }
 // );
+

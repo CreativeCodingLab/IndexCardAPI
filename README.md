@@ -1,9 +1,25 @@
-# Loopback Index Card API
+# REACH Index Card API Server
 
-A [LoopBack](http://loopback.io/) API providing access to a database of Mitre Index Cards that are output by the [REACH system](https://github.com/clulab/reach) and their associated publications, as NXML documents.
+This is a [LoopBack](http://loopback.io/) API providing access to a database of Mitre Index Cards that are output by the [REACH system](https://github.com/clulab/reach) along with their associated publications.
 
-The available API methods can be seen here:
+Available API methods can be seen here:
 [http://ccrg-data.evl.uic.edu/index-cards/explorer](http://ccrg-data.evl.uic.edu/index-cards/explorer)
+
+## Example queries
+
+ - Given an Index Card ObjectID, get the NXML data for that card:  
+http://ccrg-data.evl.uic.edu/index-cards/api/IndexCards/56cb6ca9fb34904d10525cd3/nxml
+
+- Given a PubMed ID, get all the Index Cards that were produced from that publication:  
+http://ccrg-data.evl.uic.edu/index-cards/api/NXML/PMC1174968/indexCards
+
+The API will also compare two Index Cards (sent via a POST request) using the [PathwayCommons IndexCardComparator script](https://github.com/PathwayCommons/pathway-cards/blob/master/comparator/src/main/scripts/IndexCardComparator.js).
+
+## To-Do
+
+- [ ] Incorporate "sets" of cards via a `CardSet` object.
+- [ ] Figure out how to account for index cards being output by different versions of REACH.
+- [ ] Give `participants` their own object, and add relations between index cards and participants.
 
 ## Notes
 
