@@ -56,6 +56,11 @@ var IndexCard = app.loopback.createModel({
       type: 'belongsTo',
       model: 'NXML',
       foreignKey: 'nxmlId'
+    },
+    participants: {
+      type: 'hasMany',
+      model: 'Participant',
+      through: 'IndexCardParticipants'
     }
   },
   // acls: [
@@ -73,6 +78,49 @@ var IndexCard = app.loopback.createModel({
     }
   },
   idInjection: false
+});
+
+var Participant = app.loopback.createModel({
+  name: 'Participant',
+  strict: 'throw',
+  properties: {
+    entity_text: {
+      type: String,
+      required: true
+    },
+    entity_type: {
+      type: String,
+      required: true
+    }
+  },
+  relations: {
+    indexCards: {
+      type: 'hasMany',
+      model: 'IndexCard',
+      through: 'IndexCardParticipants'
+    }
+  }
+});
+
+var IndexCardParticipants = app.loopback.createModel({
+  name: 'IndexCardParticipants',
+  strict: 'throw',
+  properties: {
+    type: {
+      type: String,
+      required: false
+    }
+  },
+  relations: {
+    indexCard: {
+      type: 'belongsTo',
+      model: 'IndexCard'
+    },
+    participant: {
+      type: 'belongsTo',
+      model: 'Participant'
+    }
+  }
 });
 
 var NXML = app.loopback.createModel({
@@ -108,23 +156,9 @@ var NXML = app.loopback.createModel({
   idInjection: false
 });
 
-//
-// Custom Remote Methods
-//
-//
-
-// IndexCard.greet = function(msg, cb) {
-//   cb(null, 'Greetings... ' + msg.foo);
-// };
-     
-// IndexCard.remoteMethod(
-//     'greet', 
-//     {
-//       // accepts: {arg: 'msg', type: 'string'},
-//       accepts: {arg: 'msg', type: 'object', http: { source: 'body' } },
-//       returns: {arg: 'greeting', type: 'string'}
-//     }
-// );
+/**
+ * Custom Remote Methods
+ */
 
 const comparator = new IndexCardComparator();
 
@@ -179,15 +213,23 @@ function disable_related_remote_write_methods(model, related) {
   model.disableRemoteMethod(`__updateById__${related}`, false);
   model.disableRemoteMethod(`__destroyById__${related}`, false);
   model.disableRemoteMethod(`__delete__${related}`, false);
+  model.disableRemoteMethod(`__link__${related}`, false);
+  model.disableRemoteMethod(`__unlink__${related}`, false);
 }
 
 disable_remote_write_methods(IndexCard);
+disable_remote_write_methods(IndexCardParticipants);
+disable_remote_write_methods(Participant);
 disable_remote_write_methods(NXML);
 
 disable_related_remote_write_methods(NXML, 'indexCards');
+disable_related_remote_write_methods(IndexCard, 'participants');
+disable_related_remote_write_methods(Participant, 'indexCards');
 
 app.model(NXML, { dataSource: 'mongo' });
 app.model(IndexCard, { dataSource: 'mongo' });
+app.model(IndexCardParticipants, { dataSource: 'mongo' });
+app.model(Participant, { dataSource: 'mongo' });
 
 app.model(app.loopback.User, { "dataSource": "db", "public": false });
 app.model(app.loopback.AccessToken, { "dataSource": "db", "public": false });
@@ -267,3 +309,18 @@ NXML
 //     console.log(d);
 //     // console.log(d.mitreCard.extracted_information.participant_b.identifier);
 //   })
+
+// Custom remote methods
+
+// IndexCard.greet = function(msg, cb) {
+//   cb(null, 'Greetings... ' + msg.foo);
+// };
+     
+// IndexCard.remoteMethod(
+//     'greet', 
+//     {
+//       // accepts: {arg: 'msg', type: 'string'},
+//       accepts: {arg: 'msg', type: 'object', http: { source: 'body' } },
+//       returns: {arg: 'greeting', type: 'string'}
+//     }
+// );
