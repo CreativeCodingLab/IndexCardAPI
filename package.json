@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "start-mongo": "mongod --dbpath /data/mongo-data-index-cards --fork --logpath ./mongo.log --logappend"
   },
   "dependencies": {
     "cors": "^2.5.2",
@@ -14,8 +15,7 @@
     "mongodb": "^2.1.7",
     "rx": "^4.0.7",
     "rx-node": "^1.0.1",
-    "serve-favicon": "^2.0.1",
-    "start-mongo": "mongod --dbpath /data/mongo-data-index-cards --fork --logpath ./mongo.log --logappend"
+    "serve-favicon": "^2.0.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1"
