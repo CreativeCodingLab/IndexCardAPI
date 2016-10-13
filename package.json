@@ -15,7 +15,7 @@
     "rx": "^4.0.7",
     "rx-node": "^1.0.1",
     "serve-favicon": "^2.0.1",
-    "start-mongo": "mongod --dbpath /data/mongo-data-index-cards --fork --logpath /home/evl/murray/Projects/ccrg-data-server/mongo.log --logappend"
+    "start-mongo": "mongod --dbpath /data/mongo-data-index-cards --fork --logpath ./mongo.log --logappend"
   },
   "devDependencies": {
     "gulp": "^3.9.1"
